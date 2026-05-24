@@ -15,10 +15,11 @@ function parseArgs(argv: string[]): {
   flags: Record<string, string | boolean>;
 } {
   const args = argv.slice(2);
-  const command = args[0] && !args[0].startsWith("-") ? args[0] : "help";
+  const command = args[0] && !args[0].startsWith("-") ? args[0] : "init";
   const flags: Record<string, string | boolean> = {};
 
-  for (let i = command === "help" ? 0 : 1; i < args.length; i++) {
+  const startIndex = args[0] && !args[0].startsWith("-") ? 1 : 0;
+  for (let i = startIndex; i < args.length; i++) {
     const arg = args[i];
     if (arg.startsWith("--")) {
       const key = arg.slice(2);
