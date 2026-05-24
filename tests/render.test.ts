@@ -41,6 +41,7 @@ const defaultOptions: InitOptions = {
   dryRun: true,
   force: false,
   yes: true,
+  json: false,
   cwd: "/dummy",
   stackOverride: null,
 };

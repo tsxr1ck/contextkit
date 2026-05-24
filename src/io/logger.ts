@@ -1,14 +1,4 @@
-// Colored terminal output using ANSI codes. Zero dependencies.
-
-const RESET = "\x1b[0m";
-const BOLD = "\x1b[1m";
-const DIM = "\x1b[2m";
-const RED = "\x1b[31m";
-const GREEN = "\x1b[32m";
-const YELLOW = "\x1b[33m";
-const BLUE = "\x1b[34m";
-const MAGENTA = "\x1b[35m";
-const CYAN = "\x1b[36m";
+import { ui } from "../ui/format/colors.js";
 
 const SYMBOLS = {
   success: "✔",
@@ -29,43 +19,43 @@ export function setDryRun(enabled: boolean) {
 }
 
 function prefix(): string {
-  return dryRunMode ? `${DIM}[dry-run]${RESET} ` : "";
+  return dryRunMode ? `${ui.mute("[dry-run]")} ` : "";
 }
 
 export function info(msg: string) {
-  console.log(`${prefix()}${BLUE}${SYMBOLS.info}${RESET} ${msg}`);
+  console.log(`${prefix()}${ui.path(SYMBOLS.info)} ${msg}`);
 }
 
 export function success(msg: string) {
-  console.log(`${prefix()}${GREEN}${SYMBOLS.success}${RESET} ${msg}`);
+  console.log(`${prefix()}${ui.ok(SYMBOLS.success)} ${msg}`);
 }
 
 export function warn(msg: string) {
-  console.log(`${prefix()}${YELLOW}${SYMBOLS.warning}${RESET} ${msg}`);
+  console.log(`${prefix()}${ui.warn(SYMBOLS.warning)} ${msg}`);
 }
 
 export function error(msg: string) {
-  console.error(`${prefix()}${RED}${SYMBOLS.error}${RESET} ${msg}`);
+  console.error(`${prefix()}${ui.error(SYMBOLS.error)} ${msg}`);
 }
 
 export function dim(msg: string) {
-  console.log(`${prefix()}${DIM}${msg}${RESET}`);
+  console.log(`${prefix()}${ui.dim(msg)}`);
 }
 
 export function heading(msg: string) {
-  console.log(`\n${BOLD}${CYAN}${msg}${RESET}`);
+  console.log(`\n${ui.code(msg)}`);
 }
 
 export function fileCreate(relativePath: string) {
-  console.log(`  ${GREEN}${SYMBOLS.create} ${relativePath}${RESET}`);
+  console.log(`  ${ui.ok(SYMBOLS.create)} ${relativePath}`);
 }
 
 export function fileModify(relativePath: string) {
-  console.log(`  ${YELLOW}${SYMBOLS.modify} ${relativePath}${RESET}`);
+  console.log(`  ${ui.warn(SYMBOLS.modify)} ${relativePath}`);
 }
 
 export function fileSkip(relativePath: string, reason: string) {
-  console.log(`  ${DIM}${SYMBOLS.skip} ${relativePath} (${reason})${RESET}`);
+  console.log(`  ${ui.dim(SYMBOLS.skip)} ${relativePath} (${reason})`);
 }
 
 export function bullet(msg: string) {
@@ -76,20 +66,18 @@ export function newline() {
   console.log();
 }
 
-/** Print a key-value detection result */
 export function detected(label: string, value: string | string[]) {
   const val = Array.isArray(value) ? value.join(", ") : value;
-  console.log(`  ${DIM}${label}:${RESET} ${MAGENTA}${val}${RESET}`);
+  console.log(`  ${ui.dim(`${label}:`)} ${ui.code(val)}`);
 }
 
-/** Print a section divider */
 export function divider() {
-  console.log(`${DIM}${"─".repeat(50)}${RESET}`);
+  console.log(ui.dim("─".repeat(50)));
 }
 
 export function banner() {
   console.log(
-    `\n${BOLD}${CYAN}contextkit${RESET} ${DIM}v0.1.0${RESET} ${DIM}— Claude Code memory scaffolder${RESET}\n`
+    `\n${ui.brand("contextkit")} ${ui.dim("v0.1.0")} ${ui.dim("— Claude Code memory scaffolder")}\n`
   );
 }
 

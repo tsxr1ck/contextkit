@@ -3,8 +3,11 @@
 import { resolve } from "node:path";
 import { initCommand } from "./commands/init.js";
 import { doctorCommand } from "./commands/doctor.js";
+import { auditCommand } from "./commands/audit.js";
 import { upgradeCommand } from "./commands/upgrade.js";
 import { log } from "../io/logger.js";
+import { ui } from "../ui/format/colors.js";
+import { symbols } from "../ui/format/symbols.js";
 
 const VERSION = "0.1.0";
 
@@ -28,7 +31,7 @@ function parseArgs(argv: string[]): {
         // Check if next arg looks like a value (not for boolean flags)
         const boolFlags = [
           "dry-run", "dryrun", "force", "yes", "with-local",
-          "import-agents", "with-hooks", "with-skills", "skills-only", "check-skills", "refresh-skills", "help", "version", "fix"
+          "import-agents", "with-hooks", "with-skills", "skills-only", "check-skills", "refresh-skills", "help", "version", "fix", "json"
         ];
         if (boolFlags.includes(key)) {
           flags[key] = true;
@@ -51,45 +54,49 @@ function parseArgs(argv: string[]): {
 }
 
 function printHelp() {
-  console.log(`
-${"\x1b[1m\x1b[36m"}contextkit${"\x1b[0m"} v${VERSION} — Claude Code memory scaffolder
-
-${"\x1b[1m"}USAGE${"\x1b[0m"}
-  contextkit <command> [flags]
-
-${"\x1b[1m"}COMMANDS${"\x1b[0m"}
-  init       Scaffold Claude Code memory files for a repository
-  doctor     Check health of existing memory setup
-  upgrade    Refresh memory structure and update installed skills
-
-${"\x1b[1m"}DOCTOR FLAGS${"\x1b[0m"}
-  --fix              Automatically extract rules and remove fluff
-  --check-skills     Verify installed skills health
-  --dry-run, -n      Preview fixes without writing
-
-${"\x1b[1m"}UPGRADE FLAGS${"\x1b[0m"}
-  --refresh-skills   Update installed skills via autoskills
-
-${"\x1b[1m"}INIT FLAGS${"\x1b[0m"}
-  --stack <name>     Override auto-detection (auto|bun|node|next|react|python|go|rust|monorepo)
-  --cwd <path>       Set working directory (default: .)
-  --dry-run, -n      Preview changes without writing
-  --force, -f        Overwrite existing files
-  --yes, -y          Skip confirmation prompts
-  --with-local       Create CLAUDE.local.md (gitignored personal notes)
-  --import-agents    Import existing AGENTS.md into CLAUDE.md
-  --with-skills      Install recommended AI agent skills via autoskills
-  --skills-only      Only run the skills installer, skip memory scaffolding
-  --with-hooks       Include hook scaffolding (coming soon)
-  --mode <mode>      Template mode: minimal or opinionated (default: opinionated)
-
-${"\x1b[1m"}EXAMPLES${"\x1b[0m"}
-  contextkit init                    Auto-detect and scaffold
-  contextkit init --stack next       Force Next.js preset
-  contextkit init --dry-run          Preview without writing
-  contextkit init -y --with-local    Non-interactive with local file
-  contextkit doctor                  Check existing setup
-`);
+  console.log();
+  console.log(`  ${ui.brand("contextkit")} ${ui.dim(`v${VERSION}`)} ${ui.dim("— Claude Code memory scaffolder")}`);
+  console.log();
+  console.log(`  ${ui.strong("USAGE")}`);
+  console.log(`    contextkit <command> [flags]`);
+  console.log();
+  console.log(`  ${ui.strong("COMMANDS")}`);
+  console.log(`    init       Scaffold Claude Code memory files for a repository`);
+  console.log(`    doctor     Check health of existing memory setup`);
+  console.log(`    audit      Score memory quality across categories`);
+  console.log(`    upgrade    Refresh memory structure and update installed skills`);
+  console.log();
+  console.log(`  ${ui.strong("DOCTOR FLAGS")}`);
+  console.log(`    --fix              Automatically extract rules and remove fluff`);
+  console.log(`    --check-skills     Verify installed skills health`);
+  console.log(`    --dry-run, -n      Preview fixes without writing`);
+  console.log();
+  console.log(`  ${ui.strong("UPGRADE FLAGS")}`);
+  console.log(`    --refresh-skills   Update installed skills via autoskills`);
+  console.log();
+  console.log(`  ${ui.strong("INIT FLAGS")}`);
+  console.log(`    --stack <name>     Override auto-detection (auto|bun|node|next|react|python|go|rust|monorepo)`);
+  console.log(`    --cwd <path>       Set working directory (default: .)`);
+  console.log(`    --dry-run, -n      Preview changes without writing`);
+  console.log(`    --force, -f        Overwrite existing files`);
+  console.log(`    --yes, -y          Skip confirmation prompts`);
+  console.log(`    --with-local       Create CLAUDE.local.md (gitignored personal notes)`);
+  console.log(`    --import-agents    Import existing AGENTS.md into CLAUDE.md`);
+  console.log(`    --with-skills      Install recommended AI agent skills via autoskills`);
+  console.log(`    --skills-only      Only run the skills installer, skip memory scaffolding`);
+  console.log(`    --with-hooks       Include hook scaffolding (coming soon)`);
+  console.log(`    --mode <mode>      Template mode: minimal or opinionated (default: opinionated)`);
+  console.log(`    --json             Output results as JSON (for scripting/CI)`);
+  console.log();
+  console.log(`  ${ui.strong("EXAMPLES")}`);
+  console.log(`    contextkit init                    Auto-detect and scaffold`);
+  console.log(`    contextkit init --stack next       Force Next.js preset`);
+  console.log(`    contextkit init --dry-run          Preview without writing`);
+  console.log(`    contextkit init -y --with-local    Non-interactive with local file`);
+  console.log(`    contextkit doctor                  Check existing setup`);
+  console.log(`    contextkit audit                   Score memory quality`);
+  console.log(`    contextkit audit --json            JSON output for scripting`);
+  console.log();
 }
 
 async function main() {
@@ -116,6 +123,7 @@ async function main() {
         dryRun: !!flags["dry-run"] || !!flags["dryrun"],
         force: !!flags["force"],
         yes: !!flags["yes"],
+        json: !!flags["json"],
         createLocal: !!flags["with-local"],
         importAgents: !!flags["import-agents"],
         withSkills: !!flags["with-skills"],
@@ -135,6 +143,14 @@ async function main() {
         checkSkills: !!flags["check-skills"],
         dryRun: !!flags["dry-run"] || !!flags["dryrun"],
         yes: !!flags["yes"],
+      });
+      break;
+    }
+
+    case "audit": {
+      await auditCommand({
+        cwd,
+        json: !!flags["json"],
       });
       break;
     }

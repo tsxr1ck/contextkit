@@ -4,14 +4,15 @@ import { SkillsAdapter } from "../../skills/adapter.js";
 import { log } from "../../io/logger.js";
 import { writeFileSafe, patchGitignore } from "../../io/fs.js";
 import { confirm } from "../../io/prompts.js";
+import { ui } from "../../ui/format/colors.js";
+import { symbols } from "../../ui/format/symbols.js";
 import type { RenderPlan } from "../../types/index.js";
 
-const SEVERITY_COLORS = {
-  high: "\x1b[31m",   // red
-  medium: "\x1b[33m", // yellow
-  low: "\x1b[2m",     // dim
-};
-const RESET = "\x1b[0m";
+const SEVERITY_CONFIG = {
+  high: { color: ui.error, symbol: symbols.error },
+  medium: { color: ui.warn, symbol: symbols.warn },
+  low: { color: ui.dim, symbol: symbols.info },
+} as const;
 
 /**
  * The `doctor` command — inspect existing memory setup and report problems.
@@ -52,14 +53,14 @@ export async function doctorCommand(options: {
   for (const [severity, findings] of Object.entries(grouped)) {
     if (findings.length === 0) continue;
 
-    const color = SEVERITY_COLORS[severity as keyof typeof SEVERITY_COLORS];
-    console.log(`${color}${severity.toUpperCase()} (${findings.length})${RESET}`);
+    const config = SEVERITY_CONFIG[severity as keyof typeof SEVERITY_CONFIG];
+    console.log(config.color(`${severity.toUpperCase()} (${findings.length})`));
 
     for (const finding of findings) {
       const filePart = finding.file ? ` [${finding.file}]` : "";
-      console.log(`  ${color}•${RESET} ${finding.message}${filePart}`);
+      console.log(`  ${config.color(symbols.bullet)} ${finding.message}${filePart}`);
       if (finding.suggestion) {
-        console.log(`    → ${finding.suggestion}`);
+        console.log(`    ${ui.dim(symbols.arrow)} ${finding.suggestion}`);
       }
     }
     console.log();
@@ -68,8 +69,8 @@ export async function doctorCommand(options: {
   // Score
   log.divider();
   const scoreColor =
-    report.score >= 80 ? "\x1b[32m" : report.score >= 50 ? "\x1b[33m" : "\x1b[31m";
-  console.log(`${scoreColor}Score: ${report.score}/100${RESET}`);
+    report.score >= 80 ? ui.ok : report.score >= 50 ? ui.warn : ui.error;
+  console.log(scoreColor(`Score: ${report.score}/100`));
   log.dim(report.summary);
   log.newline();
 

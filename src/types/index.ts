@@ -51,6 +51,7 @@ export interface InitOptions {
   dryRun: boolean;
   force: boolean;
   yes: boolean;
+  json: boolean;
   cwd: string;
   stackOverride: string | null;
 }

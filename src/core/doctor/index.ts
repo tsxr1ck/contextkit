@@ -251,3 +251,79 @@ function generateSummary(score: number, findings: DoctorFinding[]): string {
 
   return `Score: ${score}/100 — ${parts.join(", ")} severity finding(s).`;
 }
+
+export interface AuditCategory {
+  name: string;
+  label: string;
+  score: number;
+  explanation: string;
+}
+
+export type AuditReport = AuditCategory[];
+
+export function runAudit(cwd: string): AuditReport {
+  const report = runDoctor(cwd);
+
+  return [
+    {
+      name: "brevity",
+      label: "Brevity",
+      score: categoryScore("brevity", report.findings),
+      explanation: "CLAUDE.md line count and density of actionable content",
+    },
+    {
+      name: "specificity",
+      label: "Specificity",
+      score: categoryScore("specificity", report.findings),
+      explanation: "Repo-specific instructions vs generic advice",
+    },
+    {
+      name: "modularity",
+      label: "Modularity",
+      score: categoryScore("modularity", report.findings),
+      explanation: "Use of .claude/rules/ for segmented guidance",
+    },
+    {
+      name: "verification",
+      label: "Verification",
+      score: categoryScore("verification", report.findings),
+      explanation: "Commands section coverage (lint, test, typecheck)",
+    },
+    {
+      name: "compatibility",
+      label: "Compatibility",
+      score: categoryScore("compatibility", report.findings),
+      explanation: "Workflow compatibility with Claude Code",
+    },
+    {
+      name: "enforcement",
+      label: "Enforcement",
+      score: categoryScore("enforcement", report.findings),
+      explanation: "Mandatory actions in hooks vs prose",
+    },
+  ];
+}
+
+function categoryScore(category: string, findings: DoctorFinding[]): number {
+  const categoryMap: Record<string, string[]> = {
+    brevity: ["line", "heading", "large", "lines"],
+    specificity: ["generic", "phrases", "fluff"],
+    modularity: ["rules", "scoped", "segments", "segmented"],
+    verification: ["command", "lint", "test", "typecheck"],
+    compatibility: ["bridge", "agents", "claude"],
+    enforcement: ["mandatory", "hooks", "enforcement"],
+  };
+
+  const keywords = categoryMap[category] ?? [];
+  const relevant = findings.filter((f) =>
+    keywords.some((kw) => f.message.toLowerCase().includes(kw))
+  );
+
+  if (relevant.length === 0) return 10;
+
+  const deductions = relevant.reduce((sum, f) => {
+    return sum + (f.severity === "high" ? 5 : f.severity === "medium" ? 3 : 1);
+  }, 0);
+
+  return Math.max(0, 10 - deductions);
+}
