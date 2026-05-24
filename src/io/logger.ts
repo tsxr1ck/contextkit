@@ -1,4 +1,5 @@
 import { ui } from "../ui/format/colors.js";
+import figlet from "figlet";
 
 const SYMBOLS = {
   success: "✔",
@@ -76,9 +77,14 @@ export function divider() {
 }
 
 export function banner() {
-  console.log(
-    `\n${ui.brand("contextkit")} ${ui.dim("v0.1.0")} ${ui.dim("— Claude Code memory scaffolder")}\n`
-  );
+  const title = figlet.textSync("contextkit", {
+    font: "ANSI Shadow",
+    horizontalLayout: "default",
+  });
+  console.log();
+  console.log(ui.brand(title));
+  console.log(`  ${ui.dim("$ bunx contextkit")}`);
+  console.log();
 }
 
 export const log = {

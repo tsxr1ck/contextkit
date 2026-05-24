@@ -16,7 +16,7 @@ Instead of a single bloated `CLAUDE.md`, ContextKit enforces a modular architect
 - **⚕️ Doctor & Auto-Fix**: Analyzes your existing memory setup, scores its health, and can automatically repair bloated files by extracting rules and removing fluff.
 - **📊 Quality Audit**: Scored quality report across brevity, specificity, modularity, verification, compatibility, and enforcement fit.
 - **🤖 AutoSkills Integration**: Optionally installs curated, stack-specific AI agent skills via `autoskills`.
-- **🪶 Lightweight**: Minimal dependencies — `@clack/prompts` for UX plus `picocolors` for terminal styling.
+- **🪶 Lightweight**: Minimal dependencies — `@clack/prompts` for UX, `picocolors` for terminal styling, and `figlet` for the banner.
 
 ---
 

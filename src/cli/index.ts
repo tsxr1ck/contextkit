@@ -7,7 +7,6 @@ import { auditCommand } from "./commands/audit.js";
 import { upgradeCommand } from "./commands/upgrade.js";
 import { log } from "../io/logger.js";
 import { ui } from "../ui/format/colors.js";
-import { symbols } from "../ui/format/symbols.js";
 
 const VERSION = "0.1.0";
 
@@ -15,7 +14,6 @@ function parseArgs(argv: string[]): {
   command: string;
   flags: Record<string, string | boolean>;
 } {
-  // Strip bun/node + script path
   const args = argv.slice(2);
   const command = args[0] && !args[0].startsWith("-") ? args[0] : "help";
   const flags: Record<string, string | boolean> = {};
@@ -28,7 +26,6 @@ function parseArgs(argv: string[]): {
       if (eqIdx !== -1) {
         flags[key.slice(0, eqIdx)] = key.slice(eqIdx + 1);
       } else if (i + 1 < args.length && !args[i + 1].startsWith("-")) {
-        // Check if next arg looks like a value (not for boolean flags)
         const boolFlags = [
           "dry-run", "dryrun", "force", "yes", "with-local",
           "import-agents", "with-hooks", "with-skills", "skills-only", "check-skills", "refresh-skills", "help", "version", "fix", "json"
@@ -107,12 +104,12 @@ async function main() {
     return;
   }
 
+  log.banner();
+
   if (command === "help" || flags["help"]) {
     printHelp();
     return;
   }
-
-  log.banner();
 
   const cwd = resolve((flags["cwd"] as string) || ".");
 
