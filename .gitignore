@@ -1,0 +1,38 @@
+# Dependencies & build output
+node_modules/
+dist/
+*.tsbuildinfo
+
+# macOS metadata
+.DS_Store
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+bun-debug.log*
+
+# Test coverage
+coverage/
+
+# Editor directories and files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Environment variables
+.env
+.env.*
+
+# Local scratch / notes (not for publishing)
+reference/
+
+# Local Claude files (dogfooding)
+CLAUDE.md
+CLAUDE.local.md
+.claude/
