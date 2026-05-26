@@ -22,6 +22,11 @@ export const workflowSteps: WorkflowStep[] = [
   },
   {
     step: '04',
+    title: 'Watch & Stay in Sync',
+    description: 'Run `contextkit watch` to launch a live TUI dashboard that auto-rebuilds context files whenever your project changes.',
+  },
+  {
+    step: '05',
     title: 'Maintain Project Health',
     description: 'Run `doctor` or `audit` periodically to evaluate configuration health, detect gaps, and keep context fresh.',
   },
