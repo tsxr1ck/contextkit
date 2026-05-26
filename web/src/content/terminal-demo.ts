@@ -65,4 +65,17 @@ export const terminalScripts: Record<DemoTab, { command: string; steps: Terminal
       { type: 'success', text: '   ✔ High compliance with AI coding tool conventions.', delay: 200 },
     ],
   },
+  watch: {
+    command: 'bunx contextkit watch',
+    steps: [
+      { type: 'command', text: 'bunx contextkit watch', delay: 400 },
+      { type: 'output', text: '┌  ContextKit Daemon', delay: 200 },
+      { type: 'output', text: '│  Watching for changes...', delay: 200 },
+      { type: 'success', text: '◇  Context ready', delay: 400 },
+      { type: 'output', text: '│  Watching 30024 files', delay: 100 },
+      { type: 'muted', text: '│  [WATCH] Modified src/index.ts → Rebuilding context...', delay: 800 },
+      { type: 'success', text: '◇  Context updated', delay: 200 },
+      { type: 'output', text: '│  Updated for 2 provider(s)', delay: 100 },
+    ],
+  },
 }
