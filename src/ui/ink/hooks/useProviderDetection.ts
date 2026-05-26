@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useDaemonStore, type ProviderInfo } from "../store.js";
+import type { AgentProvider } from "../../../types/index.js";
 
 /**
  * Detect AI coding providers from the workspace.
@@ -9,26 +10,26 @@ function scanProviders(cwd: string): ProviderInfo[] {
   const { existsSync } = require("node:fs");
   const { join } = require("node:path");
 
-  const checks: Array<{ name: string; paths: string[] }> = [
+  const checks: Array<{ name: AgentProvider; label: string; paths: string[] }> = [
     {
-      name: "Claude Code",
+      name: "claude",
+      label: "Claude Code",
       paths: ["CLAUDE.md", ".claude"],
     },
     {
-      name: "Cursor",
+      name: "cursor",
+      label: "Cursor",
       paths: [".cursor", ".cursorrules"],
     },
     {
-      name: "Windsurf",
+      name: "windsurf",
+      label: "Windsurf",
       paths: [".windsurf", ".windsurfrules"],
     },
     {
-      name: "Aider",
-      paths: [".aider.conf.yml", ".aiderignore"],
-    },
-    {
-      name: "OpenCode",
-      paths: [".opencode"],
+      name: "opencode",
+      label: "OpenCode",
+      paths: [".opencode", ".swarm"],
     },
   ];
 
@@ -40,6 +41,7 @@ function scanProviders(cwd: string): ProviderInfo[] {
       if (existsSync(fullPath)) {
         providers.push({
           name: check.name,
+          label: check.label,
           detected: true,
           configPath: p,
         });
@@ -52,7 +54,7 @@ function scanProviders(cwd: string): ProviderInfo[] {
 }
 
 export function useProviderDetection(cwd: string): void {
-  const setProvider = useDaemonStore((s) => s.setProvider);
+  const setProviders = useDaemonStore((s) => s.setProviders);
   const setDetectedProviders = useDaemonStore((s) => s.setDetectedProviders);
   const addLog = useDaemonStore((s) => s.addLog);
 
@@ -60,18 +62,17 @@ export function useProviderDetection(cwd: string): void {
     const providers = scanProviders(cwd);
     setDetectedProviders(providers);
 
-    if (providers.length === 1) {
-      setProvider(providers[0].name);
-      addLog("scan", `Detected provider: ${providers[0].name}`);
-    } else if (providers.length > 1) {
-      // Default to first detected; user can change via TUI later
-      setProvider(providers[0].name);
+    const providerNames = providers.map((p) => p.name);
+
+    if (providerNames.length > 0) {
+      setProviders(providerNames);
       addLog(
         "scan",
-        `Detected ${providers.length} providers: ${providers.map((p) => p.name).join(", ")}`,
+        `Target providers: ${providers.map((p) => p.label).join(", ")}`,
       );
     } else {
-      addLog("scan", "No AI coding providers detected");
+      setProviders(["claude"]);
+      addLog("scan", "No AI coding providers detected. Defaulting to Claude.");
     }
   }, [cwd]);
 }

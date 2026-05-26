@@ -19,6 +19,7 @@ const dummyProfile: RepoProfile = {
     agentsMd: false,
     cursorRules: false,
     windsurfRules: false,
+    openCodeSwarm: false,
     skills: [],
   },
   confidence: {
@@ -44,6 +45,7 @@ const defaultOptions: InitOptions = {
   json: false,
   cwd: "/dummy",
   stackOverride: null,
+  targetProviders: ["claude"],
 };
 
 describe("Render Engine", () => {

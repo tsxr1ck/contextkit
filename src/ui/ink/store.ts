@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import type { AgentProvider } from "../../types/index.js";
 
 // ── Types ────────────────────────────────────────────────────
 
@@ -9,14 +10,15 @@ export interface LogEntry {
 }
 
 export interface ProviderInfo {
-  name: string;
+  name: AgentProvider;
+  label: string;
   detected: boolean;
   configPath: string;
 }
 
 export interface DaemonState {
   // Core state
-  activeProvider: string | null;
+  targetProviders: AgentProvider[];
   detectedProviders: ProviderInfo[];
   gitBranch: string;
   cwd: string;
@@ -41,7 +43,7 @@ export interface DaemonState {
 
   // Actions
   addLog: (level: LogEntry["level"], message: string) => void;
-  setProvider: (provider: string | null) => void;
+  setProviders: (providers: AgentProvider[]) => void;
   setDetectedProviders: (providers: ProviderInfo[]) => void;
   setBranch: (branch: string) => void;
   setCwd: (cwd: string) => void;
@@ -61,7 +63,7 @@ export interface DaemonState {
 
 export const useDaemonStore = create<DaemonState>((set) => ({
   // Initial state
-  activeProvider: null,
+  targetProviders: [],
   detectedProviders: [],
   gitBranch: "",
   cwd: "",
@@ -90,7 +92,7 @@ export const useDaemonStore = create<DaemonState>((set) => ({
       ].slice(0, state.maxLogs),
     })),
 
-  setProvider: (provider) => set({ activeProvider: provider }),
+  setProviders: (providers) => set({ targetProviders: providers }),
   setDetectedProviders: (providers) => set({ detectedProviders: providers }),
   setBranch: (branch) => set({ gitBranch: branch }),
   setCwd: (cwd) => set({ cwd }),

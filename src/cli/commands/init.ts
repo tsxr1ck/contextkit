@@ -65,6 +65,15 @@ async function nonInteractiveInit(options: InitOptions): Promise<void> {
   const profile = detectRepo(cwd);
   printProfile(profile);
 
+  // ── Target Providers ──
+  if (options.targetProviders.length === 0) {
+    if (profile.agentFiles.claudeMd) options.targetProviders.push("claude");
+    if (profile.agentFiles.cursorRules) options.targetProviders.push("cursor");
+    if (profile.agentFiles.windsurfRules) options.targetProviders.push("windsurf");
+    if (profile.agentFiles.openCodeSwarm) options.targetProviders.push("opencode");
+    if (options.targetProviders.length === 0) options.targetProviders.push("claude");
+  }
+
   // ── Skills ──
   const adapter = new SkillsAdapter(cwd);
   let installedSkills = false;
@@ -150,6 +159,30 @@ async function interactiveInit(options: InitOptions): Promise<void> {
   detectSpinner.stop("Repository analyzed");
 
   printDetectionSummary(profile);
+
+  // ── Step 1.5: Target Providers ──
+  const providerOptions = [
+    { value: 'claude', label: 'Claude Code', hint: profile.agentFiles.claudeMd ? 'Detected' : '' },
+    { value: 'cursor', label: 'Cursor', hint: profile.agentFiles.cursorRules ? 'Detected' : '' },
+    { value: 'windsurf', label: 'Windsurf', hint: profile.agentFiles.windsurfRules ? 'Detected' : '' },
+    { value: 'opencode', label: 'OpenCode (.swarm)', hint: profile.agentFiles.openCodeSwarm ? 'Detected' : '' },
+  ];
+
+  const initialProviders = providerOptions.filter(o => o.hint === 'Detected').map(o => o.value);
+  if (initialProviders.length === 0) initialProviders.push('claude');
+
+  const selectedProviders = await multiselect({
+    message: "Which AI assistants do you want to generate context for?",
+    options: providerOptions,
+    initialValues: options.targetProviders.length > 0 ? options.targetProviders : initialProviders,
+    required: true,
+  });
+
+  if (isCancel(selectedProviders)) {
+    outro(ui.warn("Setup canceled. No files were changed."));
+    process.exit(1);
+  }
+  options.targetProviders = selectedProviders as any[];
 
   // ── Step 2: Skills (optional) ──
   const adapter = new SkillsAdapter(cwd);

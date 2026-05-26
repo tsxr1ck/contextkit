@@ -27,7 +27,7 @@ function StatRow({
 }
 
 export function StatsPanel(): React.ReactElement {
-  const provider = useDaemonStore((s) => s.activeProvider);
+  const targetProviders = useDaemonStore((s) => s.targetProviders);
   const frameworks = useDaemonStore((s) => s.frameworks);
   const languages = useDaemonStore((s) => s.languages);
   const watchedFiles = useDaemonStore((s) => s.watchedFiles);
@@ -44,9 +44,9 @@ export function StatsPanel(): React.ReactElement {
 
       <Box flexDirection="column" marginTop={1} gap={0}>
         <StatRow
-          label="Provider"
-          value={provider || "none detected"}
-          color={provider ? "green" : "gray"}
+          label="Providers"
+          value={targetProviders.length > 0 ? targetProviders.join(", ") : "none detected"}
+          color={targetProviders.length > 0 ? "green" : "gray"}
         />
 
         <StatRow

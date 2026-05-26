@@ -11,6 +11,7 @@ Instead of a single bloated `CLAUDE.md`, ContextKit enforces a modular architect
 ## 🌟 Features
 
 - **👀 Persistent Watcher (v0.2.1)**: Runs as a background daemon with a rich Ink-based Terminal UI, actively monitoring your project to update context on file saves.
+- **🌉 Multi-Provider Bridge**: Simultaneously multiplexes context payloads to Claude Code (`CLAUDE.md`), Cursor (`.cursorrules`), Windsurf (`.windsurfrules`), and OpenCode (`.swarm/context.md`).
 - **🪶 Lean Mode (AST Pruning)**: Intelligently strips function bodies while preserving signatures, types, and interfaces, dramatically reducing token counts.
 - **🪄 Auto-Detection**: Instantly recognizes your stack (TypeScript, Next.js, React, Python, Go, Node, Bun, etc.), monorepo structures, and AI providers (Claude Code, Cursor, Windsurf, Aider, OpenCode).
 - **📂 Modular Scaffolding**: Generates a clean `CLAUDE.md` and isolates domain-specific rules (Frontend, Backend, Database) into `.claude/rules/`.
@@ -55,6 +56,7 @@ contextkit init
 - `--json`: Output results as JSON — ideal for scripting and CI environments.
 - `--with-local`: Create a `CLAUDE.local.md` file (and automatically append it to your `.gitignore`) for personal notes.
 - `--stack <name>`: Force a specific preset overlay (e.g., `next`, `react`, `bun`, `go`).
+- `--providers <list>`: Comma-separated list of target AI providers (e.g., `claude,cursor,opencode`).
 - `--import-agents`: Import an existing `AGENTS.md` into the generated CLAUDE.md.
 - `--with-skills`: Automatically install recommended AI agent skills via `autoskills`.
 - `--skills-only`: Only run the skills installer, skipping the memory scaffolding.

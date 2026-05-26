@@ -118,6 +118,11 @@ async function main() {
 
   switch (command) {
     case "init": {
+      let targetProviders: any[] = [];
+      if (flags["providers"] && typeof flags["providers"] === "string") {
+        targetProviders = flags["providers"].split(",").map((s) => s.trim());
+      }
+
       await initCommand({
         cwd,
         dryRun: !!flags["dry-run"] || !!flags["dryrun"],
@@ -132,6 +137,7 @@ async function main() {
         mode: (flags["mode"] as "minimal" | "opinionated") || "opinionated",
         stackOverride: (flags["stack"] as string) || null,
         selectedOverlays: [],
+        targetProviders,
       });
       break;
     }

@@ -29,6 +29,7 @@ export interface DetectedAgentFiles {
   agentsMd: boolean;
   cursorRules: boolean;
   windsurfRules: boolean;
+  openCodeSwarm: boolean;
   skills: string[]; // List of installed skill names
 }
 
@@ -39,6 +40,8 @@ export interface DetectionConfidence {
 // ── Init Options ──────────────────────────────────────────────
 
 export type InitMode = "minimal" | "opinionated";
+
+export type AgentProvider = "claude" | "cursor" | "windsurf" | "opencode";
 
 export interface InitOptions {
   mode: InitMode;
@@ -54,6 +57,7 @@ export interface InitOptions {
   json: boolean;
   cwd: string;
   stackOverride: string | null;
+  targetProviders: AgentProvider[];
 }
 
 // ── Render Plan ───────────────────────────────────────────────

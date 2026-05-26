@@ -9,6 +9,10 @@ import { useGitBranch } from "./hooks/useGitBranch.js";
 import { useDaemonStore } from "./store.js";
 import { ContextWatcher } from "../../core/watcher.js";
 import { detectRepo } from "../../core/detect/index.js";
+import { buildRenderPlan } from "../../core/render/index.js";
+import { resolvePresets } from "../../core/presets/index.js";
+import { writeFileSafe } from "../../io/fs.js";
+import type { InitOptions } from "../../types/index.js";
 
 interface AppProps {
   cwd: string;
@@ -26,6 +30,58 @@ export function App({ cwd }: AppProps): React.ReactElement {
   const setWatchedFiles = useDaemonStore((s) => s.setWatchedFiles);
   const setWatching = useDaemonStore((s) => s.setWatching);
   const addLog = useDaemonStore((s) => s.addLog);
+  const targetProviders = useDaemonStore((s) => s.targetProviders);
+  const setParsing = useDaemonStore((s) => s.setParsing);
+
+  const rebuildContext = () => {
+    setParsing(true);
+    try {
+      const profile = detectRepo(cwd);
+      setProjectName(profile.projectName);
+      setFrameworks(profile.frameworks.map((f) => f.name));
+      setLanguages(profile.languages.map((l) => l.name));
+      setDirectories(profile.directories);
+
+      const presets = resolvePresets(profile, {
+        stackOverride: null,
+        selectedOverlays: [],
+        importAgents: false,
+      });
+
+      const options: InitOptions = {
+        mode: "opinionated",
+        createLocal: false,
+        importAgents: false,
+        includeHooks: false,
+        withSkills: false,
+        skillsOnly: false,
+        selectedOverlays: [],
+        dryRun: false,
+        force: true,
+        yes: true,
+        json: false,
+        cwd,
+        stackOverride: null,
+        targetProviders,
+      };
+
+      const plan = buildRenderPlan(profile, presets, options);
+      
+      for (const file of plan.filesToCreate) {
+        writeFileSafe(file.absolutePath, file.content);
+      }
+      for (const file of plan.filesToModify) {
+        writeFileSafe(file.absolutePath, file.content);
+      }
+      if (plan.filesToCreate.length > 0 || plan.filesToModify.length > 0) {
+        addLog("ok", `Context updated for ${targetProviders.length} provider(s)`);
+      }
+    } catch (e: any) {
+      addLog("error", `Rebuild failed: ${e.message}`);
+    } finally {
+      setParsing(false);
+    }
+  };
 
   // Initialize hooks
   useProviderDetection(cwd);
@@ -53,6 +109,7 @@ export function App({ cwd }: AppProps): React.ReactElement {
     const watcher = new ContextWatcher(cwd, {
       onFileChange: (rel) => {
         addLog("watch", `Modified ${rel} → Rebuilding context...`);
+        rebuildContext();
       },
       onFileAdd: (rel) => {
         // Only log non-initial adds (watcher is noisy on startup)
