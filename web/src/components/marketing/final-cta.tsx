@@ -11,8 +11,8 @@ export function FinalCta() {
   const t = useT()
 
   return (
-    <SectionShell id="cta" className="border-b-0 py-20 md:py-28 select-none">
-      <div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-[100vw] bg-gradient-to-t from-primary/3 via-transparent to-transparent -z-10" />
+    <SectionShell id="cta" className="border-b-0 py-20  md:py-28 select-none">
+      <div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-[100vw]  -z-10" />
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[70%] max-w-[600px] h-[150px] bg-primary/4 rounded-full blur-[70px] -z-10" />
 
       <div className="max-w-3xl mx-auto text-center flex flex-col items-center gap-6">
