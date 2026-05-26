@@ -113,8 +113,16 @@ export function App({ cwd }: AppProps): React.ReactElement {
   useEffect(() => {
     const watcher = new ContextWatcher(cwd, {
       onFileChange: (rel) => {
-        const ignored = ["CLAUDE.md", "CLAUDE.local.md", ".cursorrules", ".windsurfrules", ".swarm/context.md"];
-        if (ignored.includes(rel)) return;
+        // Skip output files (prevent self-triggering) and OS metadata
+        if (
+          rel.startsWith(".swarm/") ||
+          rel === "CLAUDE.md" ||
+          rel === "CLAUDE.local.md" ||
+          rel === ".cursorrules" ||
+          rel === ".windsurfrules" ||
+          rel === ".DS_Store" ||
+          rel.endsWith("/.DS_Store")
+        ) return;
 
         addLog("watch", `Modified ${rel} → Rebuilding context...`);
         rebuildContext();
