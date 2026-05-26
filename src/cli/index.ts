@@ -5,10 +5,11 @@ import { initCommand } from "./commands/init.js";
 import { doctorCommand } from "./commands/doctor.js";
 import { auditCommand } from "./commands/audit.js";
 import { upgradeCommand } from "./commands/upgrade.js";
+import { watchCommand } from "./commands/watch.js";
 import { log } from "../io/logger.js";
 import { ui } from "../ui/format/colors.js";
 
-const VERSION = "0.1.0";
+const VERSION = "0.2.1";
 
 function parseArgs(argv: string[]): {
   command: string;
@@ -60,6 +61,7 @@ function printHelp() {
   console.log();
   console.log(`  ${ui.strong("COMMANDS")}`);
   console.log(`    init       Scaffold Claude Code memory files for a repository`);
+  console.log(`    watch      Launch persistent TUI dashboard with live file watching`);
   console.log(`    doctor     Check health of existing memory setup`);
   console.log(`    audit      Score memory quality across categories`);
   console.log(`    upgrade    Refresh memory structure and update installed skills`);
@@ -158,6 +160,11 @@ async function main() {
         cwd,
         refreshSkills: !!flags["refresh-skills"],
       });
+      break;
+    }
+
+    case "watch": {
+      await watchCommand({ cwd });
       break;
     }
 

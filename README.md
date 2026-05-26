@@ -10,13 +10,14 @@ Instead of a single bloated `CLAUDE.md`, ContextKit enforces a modular architect
 
 ## 🌟 Features
 
-- **🪄 Auto-Detection**: Instantly recognizes your stack (TypeScript, Next.js, React, Python, Go, Node, Bun, etc.) and monorepo structures.
+- **👀 Persistent Watcher (v0.2.1)**: Runs as a background daemon with a rich Ink-based Terminal UI, actively monitoring your project to update context on file saves.
+- **🪶 Lean Mode (AST Pruning)**: Intelligently strips function bodies while preserving signatures, types, and interfaces, dramatically reducing token counts.
+- **🪄 Auto-Detection**: Instantly recognizes your stack (TypeScript, Next.js, React, Python, Go, Node, Bun, etc.), monorepo structures, and AI providers (Claude Code, Cursor, Windsurf, Aider, OpenCode).
 - **📂 Modular Scaffolding**: Generates a clean `CLAUDE.md` and isolates domain-specific rules (Frontend, Backend, Database) into `.claude/rules/`.
-- **🎨 Polished CLI UX**: Interactive prompts via `@clack/prompts` — grouped questions, stack overlay selection, progress spinners, and task runners.
+- **🎨 Polished UX**: Features both a static wizard (`init`) using `@clack/prompts` and a persistent live dashboard (`watch`) built with `ink` and `zustand`.
 - **⚕️ Doctor & Auto-Fix**: Analyzes your existing memory setup, scores its health, and can automatically repair bloated files by extracting rules and removing fluff.
 - **📊 Quality Audit**: Scored quality report across brevity, specificity, modularity, verification, compatibility, and enforcement fit.
 - **🤖 AutoSkills Integration**: Optionally installs curated, stack-specific AI agent skills via `autoskills`.
-- **🪶 Lightweight**: Minimal dependencies — `@clack/prompts` for UX, `picocolors` for terminal styling, and `figlet` for the banner.
 
 ---
 
@@ -59,6 +60,15 @@ contextkit init
 - `--skills-only`: Only run the skills installer, skipping the memory scaffolding.
 - `--mode <mode>`: Template mode — `minimal` (essentials only) or `opinionated` (full conventions, default).
 - `--with-hooks`: Include hook scaffolding for mandatory actions (coming soon).
+
+---
+
+### `watch` (New in v0.2.1)
+Launches the persistent Ink TUI dashboard. It actively monitors your project directory using `chokidar`, tracks your current Git branch, displays estimated token savings (via Lean Mode), and rebuilds context dynamically when files change.
+
+```bash
+contextkit watch
+```
 
 ---
 
