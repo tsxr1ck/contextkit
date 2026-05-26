@@ -87,6 +87,12 @@ const en: Translations = {
         tag: 'audit',
       },
       {
+        title: 'Live Watch Mode',
+        description:
+          'Run `contextkit watch` to launch a persistent TUI dashboard that monitors file changes and auto-rebuilds context in real time.',
+        tag: 'watch',
+      },
+      {
         title: 'Non-Interactive Automation',
         description:
           'Fully supports non-interactive CLI flags, making it trivial to script scaffolding inside templates or CI pipelines.',
@@ -120,6 +126,12 @@ const en: Translations = {
       },
       {
         step: '04',
+        title: 'Watch & Stay in Sync',
+        description:
+          'Run `contextkit watch` to launch a live TUI dashboard that auto-rebuilds context files whenever your project changes.',
+      },
+      {
+        step: '05',
         title: 'Maintain Project Health',
         description:
           'Run `doctor` or `audit` periodically to evaluate configuration health, detect gaps, and keep context fresh.',
@@ -182,6 +194,8 @@ bunx contextkit
 \`\`\`
 
 ## Commands
+- \`init\` - Scaffold context files.
+- \`watch\` - Live TUI dashboard.
 - \`doctor\` - Runs repository diagnosis.
 - \`audit\` - Scores repository quality.`,
       },
@@ -212,6 +226,11 @@ bunx contextkit
         question: 'Can I run ContextKit headlessly in pipelines?',
         answer:
           'Yes. By running the CLI with `--yes` or non-interactive parameters, you can bypass all terminal prompt inputs. This is ideal for repository templates, CI/CD checks, or automated dev environment configurations.',
+      },
+      {
+        question: 'What does `contextkit watch` do?',
+        answer:
+          'It launches a persistent terminal dashboard (TUI) that monitors your project for file changes and automatically rebuilds your context files in real time. It shows detected frameworks, languages, file counts, and a live activity log — all without leaving your terminal.',
       },
       {
         question: 'Does it support complex monorepos?',

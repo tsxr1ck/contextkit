@@ -1,6 +1,6 @@
 {
-  "name": "contextkit",
-  "version": "0.1.0",
+  "name": "@tsxr1ck/contextkit",
+  "version": "0.2.2",
   "type": "module",
   "description": "Scaffold concise Claude Code memory files for any repository",
   "bin": {
@@ -13,6 +13,7 @@
   ],
   "scripts": {
     "dev": "bun run src/cli/index.ts",
+    "watch": "bun run src/cli/index.ts watch",
     "test": "bun test",
     "typecheck": "bun x tsc --noEmit",
     "lint": "bun x biome check .",
@@ -20,7 +21,8 @@
   },
   "devDependencies": {
     "@types/bun": "latest",
-    "@types/figlet": "^1.7.0"
+    "@types/figlet": "^1.7.0",
+    "@types/react": "^19.1.0"
   },
   "license": "MIT",
   "keywords": [
@@ -31,11 +33,19 @@
     "context",
     "CLAUDE.md",
     "ai",
-    "developer-tools"
+    "developer-tools",
+    "tui",
+    "watcher"
   ],
   "dependencies": {
     "@clack/prompts": "^1.4.0",
+    "chokidar": "^4.0.0",
     "figlet": "^1.11.0",
-    "picocolors": "^1.1.1"
+    "ink": "^7.0.4",
+    "ink-spinner": "^5.0.0",
+    "picocolors": "^1.1.1",
+    "react": "^19.1.0",
+    "ts-morph": "^25.0.0",
+    "zustand": "^5.0.0"
   }
 }

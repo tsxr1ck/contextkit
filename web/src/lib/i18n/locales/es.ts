@@ -88,6 +88,12 @@ const es: Translations = {
         tag: 'audit',
       },
       {
+        title: 'Modo Watch en Vivo',
+        description:
+          'Ejecuta `contextkit watch` para lanzar un dashboard TUI persistente que monitorea cambios de archivos y reconstruye el contexto automáticamente.',
+        tag: 'watch',
+      },
+      {
         title: 'Automatización No Interactiva',
         description:
           'Soporta flags CLI no interactivos, facilitando el scripting en plantillas o pipelines de CI.',
@@ -121,6 +127,12 @@ const es: Translations = {
       },
       {
         step: '04',
+        title: 'Observa y Mantente Sincronizado',
+        description:
+          'Ejecuta `contextkit watch` para lanzar un dashboard TUI en vivo que reconstruye los archivos de contexto automáticamente cuando tu proyecto cambia.',
+      },
+      {
+        step: '05',
         title: 'Mantén la Salud del Proyecto',
         description:
           'Ejecuta `doctor` o `audit` periódicamente para evaluar la configuración, detectar carencias y mantener el contexto actualizado.',
@@ -183,6 +195,8 @@ bunx contextkit
 \`\`\`
 
 ## Comandos
+- \`init\` - Genera archivos de contexto.
+- \`watch\` - Dashboard TUI en vivo.
 - \`doctor\` - Ejecuta diagnóstico del repositorio.
 - \`audit\` - Puntúa la calidad del repositorio.`,
       },
@@ -213,6 +227,11 @@ bunx contextkit
         question: '¿Puedo ejecutar ContextKit sin interfaz en pipelines?',
         answer:
           'Sí. Al ejecutar el CLI con `--yes` o parámetros no interactivos, puedes omitir todos los prompts de terminal. Esto es ideal para plantillas de repositorio, verificaciones CI/CD o configuraciones automatizadas de entorno de desarrollo.',
+      },
+      {
+        question: '¿Qué hace `contextkit watch`?',
+        answer:
+          'Lanza un dashboard de terminal persistente (TUI) que monitorea tu proyecto en busca de cambios y reconstruye automáticamente tus archivos de contexto en tiempo real. Muestra frameworks detectados, lenguajes, cantidad de archivos y un registro de actividad en vivo — todo sin salir de tu terminal.',
       },
       {
         question: '¿Soporta monorepos complejos?',

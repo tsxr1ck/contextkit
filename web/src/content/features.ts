@@ -31,6 +31,11 @@ export const featuresList: Feature[] = [
     tag: 'audit',
   },
   {
+    title: 'Live Watch Mode',
+    description: 'Run `contextkit watch` to launch a persistent TUI dashboard that monitors file changes and auto-rebuilds context in real time.',
+    tag: 'watch',
+  },
+  {
     title: 'Non-Interactive Automation',
     description: 'Fully supports non-interactive CLI flags, making it trivial to script scaffolding inside templates or CI pipelines.',
     tag: 'automate',

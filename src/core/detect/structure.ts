@@ -41,6 +41,7 @@ export function detectAgentFiles(cwd: string): DetectedAgentFiles {
     agentsMd: fileExists(join(cwd, "AGENTS.md")),
     cursorRules: fileExists(join(cwd, ".cursorrules")),
     windsurfRules: fileExists(join(cwd, ".windsurfrules")),
+    openCodeSwarm: dirExists(join(cwd, ".swarm")),
     skills: detectSkills(cwd),
   };
 }

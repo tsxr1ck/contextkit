@@ -4,7 +4,7 @@ export type TerminalStep = {
   delay?: number // ms to wait after rendering this line
 }
 
-export type DemoTab = 'init' | 'doctor' | 'audit'
+export type DemoTab = 'init' | 'watch' | 'doctor' | 'audit'
 
 export const terminalScripts: Record<DemoTab, { command: string; steps: TerminalStep[] }> = {
   init: {

@@ -30,35 +30,49 @@ export function buildRenderPlan(
     warnings: [],
   };
 
-  // ── Root CLAUDE.md ──
-  const claudeMdContent = renderRootFile(presets);
-  const claudeMdPath = join(profile.cwd, "CLAUDE.md");
-  const claudeMdFile: PlannedFile = {
-    relativePath: "CLAUDE.md",
-    absolutePath: claudeMdPath,
-    content: claudeMdContent,
-    source: "base",
-    lineCount: claudeMdContent.split("\n").length,
-  };
-
-  if (fileExists(claudeMdPath) && !options.force) {
-    plan.filesToSkip.push(claudeMdFile);
-    plan.warnings.push({
-      file: "CLAUDE.md",
-      message: "Already exists. Use --force to overwrite or --merge to update managed sections.",
-      severity: "warn",
-    });
-  } else {
-    plan.filesToCreate.push(claudeMdFile);
-  }
+  // ── Master Context ──
+  const masterContext = renderRootFile(presets);
+  const lineCount = masterContext.split("\n").length;
 
   // Line budget check
-  if (claudeMdFile.lineCount > LINE_BUDGET_WARN) {
+  if (lineCount > LINE_BUDGET_WARN) {
     plan.warnings.push({
-      file: "CLAUDE.md",
-      message: `${claudeMdFile.lineCount} lines exceeds the recommended ${LINE_BUDGET_TARGET}-line target. Consider moving content to .claude/rules/.`,
+      file: "Master Context",
+      message: `${lineCount} lines exceeds the recommended ${LINE_BUDGET_TARGET}-line target. Consider moving content to scoped rules.`,
       severity: "warn",
     });
+  }
+
+  // ── Route the output based on selected providers ──
+  const targets = [
+    { provider: "claude", path: "CLAUDE.md" },
+    { provider: "cursor", path: ".cursorrules" },
+    { provider: "windsurf", path: ".windsurfrules" },
+    { provider: "opencode", path: ".swarm/context.md" },
+  ] as const;
+
+  for (const { provider, path: relativePath } of targets) {
+    if (options.targetProviders.includes(provider)) {
+      const absolutePath = join(profile.cwd, relativePath);
+      const plannedFile: PlannedFile = {
+        relativePath,
+        absolutePath,
+        content: masterContext,
+        source: "base",
+        lineCount,
+      };
+
+      if (fileExists(absolutePath) && !options.force) {
+        plan.filesToSkip.push(plannedFile);
+        plan.warnings.push({
+          file: relativePath,
+          message: "Already exists. Use --force to overwrite.",
+          severity: "warn",
+        });
+      } else {
+        plan.filesToCreate.push(plannedFile);
+      }
+    }
   }
 
   // ── CLAUDE.local.md ──
