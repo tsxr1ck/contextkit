@@ -9,7 +9,7 @@ import { watchCommand } from "./commands/watch.js";
 import { log } from "../io/logger.js";
 import { ui } from "../ui/format/colors.js";
 
-const VERSION = "0.2.1";
+const VERSION = "0.2.2";
 
 function parseArgs(argv: string[]): {
   command: string;

@@ -1,6 +1,6 @@
 {
   "name": "@tsxr1ck/contextkit",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "type": "module",
   "description": "Scaffold concise Claude Code memory files for any repository",
   "bin": {
