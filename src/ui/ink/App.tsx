@@ -30,10 +30,10 @@ export function App({ cwd }: AppProps): React.ReactElement {
   const setWatchedFiles = useDaemonStore((s) => s.setWatchedFiles);
   const setWatching = useDaemonStore((s) => s.setWatching);
   const addLog = useDaemonStore((s) => s.addLog);
-  const targetProviders = useDaemonStore((s) => s.targetProviders);
   const setParsing = useDaemonStore((s) => s.setParsing);
 
   const rebuildContext = () => {
+    const targetProviders = useDaemonStore.getState().targetProviders;
     setParsing(true);
     try {
       const profile = detectRepo(cwd);
@@ -67,13 +67,18 @@ export function App({ cwd }: AppProps): React.ReactElement {
 
       const plan = buildRenderPlan(profile, presets, options);
       
-      for (const file of plan.filesToCreate) {
-        writeFileSafe(file.absolutePath, file.content);
+      // Only overwrite master context files in watch mode to avoid destroying user-edited rules
+      const masterPaths = ["CLAUDE.md", ".cursorrules", ".windsurfrules", ".swarm/context.md"];
+
+      let wroteCount = 0;
+      for (const file of [...plan.filesToCreate, ...plan.filesToModify]) {
+        if (masterPaths.includes(file.relativePath)) {
+          writeFileSafe(file.absolutePath, file.content);
+          wroteCount++;
+        }
       }
-      for (const file of plan.filesToModify) {
-        writeFileSafe(file.absolutePath, file.content);
-      }
-      if (plan.filesToCreate.length > 0 || plan.filesToModify.length > 0) {
+
+      if (wroteCount > 0) {
         addLog("ok", `Context updated for ${targetProviders.length} provider(s)`);
       }
     } catch (e: any) {
@@ -108,6 +113,9 @@ export function App({ cwd }: AppProps): React.ReactElement {
   useEffect(() => {
     const watcher = new ContextWatcher(cwd, {
       onFileChange: (rel) => {
+        const ignored = ["CLAUDE.md", "CLAUDE.local.md", ".cursorrules", ".windsurfrules", ".swarm/context.md"];
+        if (ignored.includes(rel)) return;
+
         addLog("watch", `Modified ${rel} → Rebuilding context...`);
         rebuildContext();
       },
